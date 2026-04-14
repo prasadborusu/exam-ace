@@ -7,6 +7,7 @@ export function Footer() {
   const handleAdminClick = () => {
     const password = window.prompt("Enter Admin Password:");
     if (password === "1212") {
+      sessionStorage.setItem("examace_admin_access", "true");
       router.navigate({ to: "/admin" });
     }
   };

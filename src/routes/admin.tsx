@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,6 +37,17 @@ const formSchema = z.object({
 });
 
 export const Route = createFileRoute("/admin")({
+  beforeLoad: () => {
+    // Only run on client-side
+    if (typeof window !== "undefined") {
+      const isAdmin = sessionStorage.getItem("examace_admin_access") === "true";
+      if (!isAdmin) {
+        throw redirect({
+          to: "/",
+        });
+      }
+    }
+  },
   component: AdminPage,
 });
 
