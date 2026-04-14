@@ -39,8 +39,18 @@ function DefaultErrorComponent({
   );
 }
 
+let queryClient: QueryClient | undefined;
+
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  if (!queryClient) {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 1000 * 60 * 5, // 5 minutes
+        },
+      },
+    });
+  }
 
   const router = createRouter({
     routeTree,

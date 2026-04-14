@@ -5,13 +5,24 @@ export function useSubjects() {
   return useQuery({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("subjects")
-        .select("*")
-        .order("id");
-      if (error) throw error;
-      return data;
+      console.log("Fetching subjects...");
+      try {
+        const { data, error } = await supabase
+          .from("subjects")
+          .select("*")
+          .order("id");
+        if (error) {
+          console.error("Supabase error fetching subjects:", error);
+          throw error;
+        }
+        console.log("Subjects fetched successfully:", data?.length);
+        return data;
+      } catch (err) {
+        console.error("Unexpected error in useSubjects:", err);
+        throw err;
+      }
     },
+    throwOnError: true,
   });
 }
 

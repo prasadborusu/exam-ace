@@ -39,8 +39,22 @@ function Index() {
 
       {isLoading && <CardSkeleton count={3} />}
       {error && (
-        <div className="glass-card rounded-2xl p-8 text-center text-destructive">
-          Failed to load subjects. Please try again.
+        <div className="glass-card rounded-2xl p-8 text-center max-w-lg mx-auto border-destructive/20">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">Failed to load content</h3>
+          <p className="text-sm text-muted-foreground mb-6">
+            We couldn't reach the database. Please check your connection and try refreshing.
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-all hover:glow-primary"
+          >
+            Retry Connection
+          </button>
         </div>
       )}
       {subjects && (
