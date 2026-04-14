@@ -116,7 +116,7 @@ function AdminPage() {
                         onValueChange={(val) => {
                           field.onChange(val);
                           form.setValue("moduleId", "");
-                          form.setValue("marksCategoryId", "");
+                          form.setValue("marksType", "");
                         }} 
                         value={field.value}
                       >
@@ -148,7 +148,7 @@ function AdminPage() {
                       <Select 
                         onValueChange={(val) => {
                           field.onChange(val);
-                          form.setValue("marksCategoryId", "");
+                          form.setValue("marksType", "2 Marks");
                         }}
                         disabled={!selectedSubjectId || loadingModules}
                         value={field.value}
