@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { z } from "zod";
 import { toast } from "sonner";
 import { 
   useSubjects, 
@@ -30,12 +30,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, PlusCircle } from "lucide-react";
 
-const formSchema = z.zod.object({
-  subjectId: z.zod.string().min(1, "Please select a subject"),
-  moduleId: z.zod.string().min(1, "Please select a module"),
-  marksCategoryId: z.zod.string().min(1, "Please select a category"),
-  question: z.zod.string().min(10, "Question must be at least 10 characters"),
-  answer: z.zod.string().min(10, "Answer must be at least 10 characters"),
+const formSchema = z.object({
+  subjectId: z.string().min(1, "Please select a subject"),
+  moduleId: z.string().min(1, "Please select a module"),
+  marksCategoryId: z.string().min(1, "Please select a category"),
+  question: z.string().min(10, "Question must be at least 10 characters"),
+  answer: z.string().min(10, "Answer must be at least 10 characters"),
 });
 
 export const Route = createFileRoute("/admin")({
