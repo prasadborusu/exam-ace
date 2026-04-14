@@ -80,6 +80,7 @@ export type Database = {
           answer: string
           created_at: string | null
           id: number
+          image_url: string | null
           is_bookmarked: boolean | null
           marks_category_id: number
           question: string
@@ -89,6 +90,7 @@ export type Database = {
           answer: string
           created_at?: string | null
           id?: number
+          image_url?: string | null
           is_bookmarked?: boolean | null
           marks_category_id: number
           question: string
@@ -98,6 +100,7 @@ export type Database = {
           answer?: string
           created_at?: string | null
           id?: number
+          image_url?: string | null
           is_bookmarked?: boolean | null
           marks_category_id?: number
           question?: string

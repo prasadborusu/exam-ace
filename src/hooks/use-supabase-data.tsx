@@ -22,14 +22,14 @@ export function useSubjects() {
       };
 
       try {
-        const { data, error } = await fetchWithTimeout();
-        if (error) {
-          console.error("Supabase error fetching subjects:", error);
-          throw error;
+        const result = await fetchWithTimeout();
+        if (result.error) {
+          console.error("Supabase error fetching subjects:", result.error);
+          throw result.error;
         }
-        console.log("Subjects fetched successfully:", data?.length);
-        return data;
-      } catch (err) {
+        console.log("Subjects fetched successfully:", result.data?.length);
+        return result.data;
+      } catch (err: any) {
         console.error("Unexpected error in useSubjects:", err);
         throw err;
       }

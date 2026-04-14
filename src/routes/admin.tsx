@@ -21,6 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -355,7 +356,9 @@ function AdminDashboard() {
 
               {/* Image Upload */}
               <div className="space-y-2">
-                <FormLabel>Answer Image (Optional Diagram)</FormLabel>
+                <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Answer Image (Optional Diagram)
+                </Label>
                 <div className="flex flex-col gap-4">
                   {imagePreview ? (
                     <div className="relative aspect-video rounded-xl overflow-hidden border border-border/50 group">
