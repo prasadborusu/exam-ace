@@ -92,12 +92,6 @@ function SecurityGate({ onAuthorized }: { onAuthorized: () => void }) {
 
 function AdminPage() {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  
-  const { data: subjects, isLoading: loadingSubjects } = useSubjects();
-  const createQuestion = useCreateQuestion();
 
   useEffect(() => {
     const isAdmin = sessionStorage.getItem("examace_admin_access") === "true";
@@ -109,6 +103,18 @@ function AdminPage() {
   if (isAuthorized === false) {
     return <SecurityGate onAuthorized={() => setIsAuthorized(true)} />;
   }
+
+  return <AdminDashboard />;
+}
+
+function AdminDashboard() {
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  
+  const { data: subjects, isLoading: loadingSubjects } = useSubjects();
+  const createQuestion = useCreateQuestion();
+
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
