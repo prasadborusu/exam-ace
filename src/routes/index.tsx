@@ -59,7 +59,7 @@ function Index() {
       )}
       {subjects && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {subjects.map((subject, i) => (
+          {subjects.map((subject: any, i: number) => (
             <SubjectCard
               key={subject.id}
               id={subject.id}

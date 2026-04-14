@@ -17,8 +17,8 @@ export function useSubjects() {
           setTimeout(() => reject(new Error("Supabase request timed out after 10 seconds")), 10000)
         );
 
-        const result = await Promise.race([fetchPromise, timeoutPromise]) as any;
-        return result;
+        const result = await Promise.race([fetchPromise, timeoutPromise]);
+        return result as { data: any[] | null; error: any };
       };
 
       try {

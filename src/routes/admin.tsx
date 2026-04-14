@@ -63,7 +63,7 @@ function AdminPage() {
   );
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const subjectName = subjects?.find(s => s.id.toString() === values.subjectId)?.name || "";
+    const subjectName = subjects?.find((s: any) => s.id.toString() === values.subjectId)?.name || "";
     
     try {
       await createQuestion.mutateAsync({
@@ -124,7 +124,7 @@ function AdminPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {subjects?.map((subject) => (
+                          {subjects?.map((subject: { id: number; name: string }) => (
                             <SelectItem key={subject.id} value={subject.id.toString()}>
                               {subject.name}
                             </SelectItem>
@@ -157,7 +157,7 @@ function AdminPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {modules?.map((module) => (
+                          {modules?.map((module: any) => (
                             <SelectItem key={module.id} value={module.id.toString()}>
                               Module {module.module_number}: {module.name}
                             </SelectItem>
