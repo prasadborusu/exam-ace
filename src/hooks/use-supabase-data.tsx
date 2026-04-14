@@ -146,6 +146,7 @@ export function useCreateQuestion() {
       subject: string; 
       question: string; 
       answer: string; 
+      image_url?: string;
     }) => {
       // 1. Find or create the marks category
       let categoryId: number;
@@ -180,7 +181,8 @@ export function useCreateQuestion() {
           marks_category_id: categoryId,
           subject: vars.subject,
           question: vars.question,
-          answer: vars.answer
+          answer: vars.answer,
+          image_url: vars.image_url
         }])
         .select()
         .single();
