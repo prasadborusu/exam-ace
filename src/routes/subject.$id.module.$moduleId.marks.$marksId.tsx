@@ -68,6 +68,7 @@ function QuestionsPage() {
               id={q.id}
               question={q.question}
               answer={q.answer}
+              imageUrl={q.image_url}
               isBookmarked={isBookmarked(q.id)}
               isRead={isRead(q.id)}
               onToggleBookmark={toggleBookmark}

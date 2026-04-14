@@ -7,6 +7,7 @@ interface QuestionAccordionProps {
   id: number;
   question: string;
   answer: string;
+  imageUrl?: string | null;
   isBookmarked: boolean;
   isRead: boolean;
   onToggleBookmark: (id: number) => void;
@@ -14,7 +15,7 @@ interface QuestionAccordionProps {
 }
 
 export function QuestionAccordion({
-  id, question, answer, isBookmarked, isRead, onToggleBookmark, onMarkRead,
+  id, question, answer, imageUrl, isBookmarked, isRead, onToggleBookmark, onMarkRead,
 }: QuestionAccordionProps) {
   const [open, setOpen] = useState(false);
 
@@ -58,6 +59,16 @@ export function QuestionAccordion({
             <div className="px-4 pb-4 pt-0">
               <div className="rounded-lg bg-secondary/50 p-4 text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                 {answer}
+                
+                {imageUrl && (
+                  <div className="mt-4 rounded-xl overflow-hidden border border-border/50 bg-background/30 p-1 group">
+                    <img 
+                      src={imageUrl} 
+                      alt="Question Diagram" 
+                      className="w-full max-w-full rounded-lg object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

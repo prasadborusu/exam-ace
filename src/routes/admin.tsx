@@ -11,7 +11,8 @@ import {
 } from "@/hooks/use-supabase-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock } from "lucide-react";
+import { Lock, Image as ImageIcon, X, UploadCloud } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
   FormControl,
@@ -91,6 +92,10 @@ function SecurityGate({ onAuthorized }: { onAuthorized: () => void }) {
 
 function AdminPage() {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  
   const { data: subjects, isLoading: loadingSubjects } = useSubjects();
   const createQuestion = useCreateQuestion();
 
@@ -123,16 +128,59 @@ function AdminPage() {
     selectedSubjectId ? parseInt(selectedSubjectId) : 0
   );
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Image size must be less than 2MB");
+        return;
+      }
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const subjectName = subjects?.find((s: any) => s.id.toString() === values.subjectId)?.name || "";
+    setIsUploading(true);
     
     try {
+      let imageUrl = "";
+
+      if (selectedImage) {
+        const fileExt = selectedImage.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('question-images')
+          .upload(filePath, selectedImage);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('question-images')
+          .getPublicUrl(filePath);
+          
+        imageUrl = publicUrl;
+      }
+
       await createQuestion.mutateAsync({
         module_id: parseInt(values.moduleId),
         marks_type: values.marksType,
         subject: subjectName,
         question: values.question,
         answer: values.answer,
+        image_url: imageUrl,
       });
       
       toast.success("Question added successfully!");
@@ -141,9 +189,12 @@ function AdminPage() {
         question: "",
         answer: "",
       });
+      clearImage();
     } catch (error) {
       toast.error("Failed to add question. Please try again.");
       console.error(error);
+    } finally {
+      setIsUploading(false);
     }
   }
 
@@ -296,16 +347,54 @@ function AdminPage() {
                 )}
               />
 
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <FormLabel>Answer Image (Optional Diagram)</FormLabel>
+                <div className="flex flex-col gap-4">
+                  {imagePreview ? (
+                    <div className="relative aspect-video rounded-xl overflow-hidden border border-border/50 group">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-contain bg-secondary/30" />
+                      <button 
+                        type="button" 
+                        onClick={clearImage}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-32 w-full rounded-xl border-2 border-dashed border-border/50 bg-secondary/20 hover:bg-secondary/30 transition-colors cursor-pointer group">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <UploadCloud className="w-8 h-8 mb-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          <span className="font-semibold text-primary">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">PNG, JPG or GIF (MAX. 2MB)</p>
+                      </div>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
               <Button 
                 type="submit" 
                 className="w-full relative overflow-hidden group py-6"
-                disabled={createQuestion.isPending}
+                disabled={createQuestion.isPending || isUploading}
               >
                 <div className="absolute inset-0 bg-primary/20 group-hover:bg-primary/30 transition-colors" />
-                {createQuestion.isPending ? (
+                {createQuestion.isPending || isUploading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  "Add Question"
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" />
+                    <span>Add Question with Diagram</span>
+                  </div>
                 )}
               </Button>
             </form>
