@@ -110,3 +110,30 @@ export function useQuestions(marksCategoryId: number) {
     enabled: !!marksCategoryId,
   });
 }
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+export function useCreateQuestion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (question: { 
+      marks_category_id: number; 
+      subject: string; 
+      question: string; 
+      answer: string; 
+    }) => {
+      const { data, error } = await supabase
+        .from("questions")
+        .insert([question])
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["questions", variables.marks_category_id] });
+    },
+  });
+}
+

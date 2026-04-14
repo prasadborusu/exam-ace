@@ -15,17 +15,25 @@ export function Navbar() {
             </div>
             <span className="text-xl font-bold text-gradient">ExamAce</span>
           </Link>
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary transition-all duration-300 hover:scale-105"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4 text-foreground" />
-            ) : (
-              <Moon className="h-4 w-4 text-foreground" />
-            )}
-          </button>
+          <div className="flex items-center gap-4">
+            <Link 
+              to="/admin" 
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Admin
+            </Link>
+            <button
+              onClick={toggleTheme}
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary transition-all duration-300 hover:scale-105"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4 text-foreground" />
+              ) : (
+                <Moon className="h-4 w-4 text-foreground" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </nav>
