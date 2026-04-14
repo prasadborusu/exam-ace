@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +6,6 @@ import { toast } from "sonner";
 import { 
   useSubjects, 
   useModules, 
-  useMarksCategories, 
   useCreateQuestion 
 } from "@/hooks/use-supabase-data";
 import { Button } from "@/components/ui/button";
