@@ -1,4 +1,5 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,6 +10,8 @@ import {
   useCreateQuestion 
 } from "@/hooks/use-supabase-data";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Lock } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -37,23 +40,70 @@ const formSchema = z.object({
 });
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: () => {
-    // Only run on client-side
-    if (typeof window !== "undefined") {
-      const isAdmin = sessionStorage.getItem("examace_admin_access") === "true";
-      if (!isAdmin) {
-        throw redirect({
-          to: "/",
-        });
-      }
-    }
-  },
   component: AdminPage,
 });
 
+function SecurityGate({ onAuthorized }: { onAuthorized: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "1212") {
+      sessionStorage.setItem("examace_admin_access", "true");
+      onAuthorized();
+    } else {
+      setError(true);
+      toast.error("Invalid password!");
+    }
+  };
+
+  return (
+    <div className="flex min-h-[80vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md glass-card border-border/50">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 glow-primary">
+            <Lock className="h-6 w-6 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-gradient">Secret Access Required</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="Enter Admin Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`bg-background/50 ${error ? "border-destructive animate-shake" : ""}`}
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Unlock Dashboard
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function AdminPage() {
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const { data: subjects, isLoading: loadingSubjects } = useSubjects();
   const createQuestion = useCreateQuestion();
+
+  useEffect(() => {
+    const isAdmin = sessionStorage.getItem("examace_admin_access") === "true";
+    setIsAuthorized(isAdmin);
+  }, []);
+
+  if (isAuthorized === null) return null; // Loading state to prevent flash
+
+  if (isAuthorized === false) {
+    return <SecurityGate onAuthorized={() => setIsAuthorized(true)} />;
+  }
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
