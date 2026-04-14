@@ -5,12 +5,24 @@ export function useSubjects() {
   return useQuery({
     queryKey: ["subjects"],
     queryFn: async () => {
-      console.log("Fetching subjects...");
-      try {
-        const { data, error } = await supabase
+      console.log("Fetching subjects... Browser Online:", window.navigator.onLine);
+      
+      const fetchWithTimeout = async () => {
+        const fetchPromise = supabase
           .from("subjects")
           .select("*")
           .order("id");
+          
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Supabase request timed out after 10 seconds")), 10000)
+        );
+
+        const result = await Promise.race([fetchPromise, timeoutPromise]) as any;
+        return result;
+      };
+
+      try {
+        const { data, error } = await fetchWithTimeout();
         if (error) {
           console.error("Supabase error fetching subjects:", error);
           throw error;
