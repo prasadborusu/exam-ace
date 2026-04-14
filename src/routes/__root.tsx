@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BlobBackground } from "@/components/BlobBackground";
 
+import "../styles.css";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
