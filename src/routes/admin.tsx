@@ -33,7 +33,7 @@ import { Loader2, PlusCircle } from "lucide-react";
 const formSchema = z.object({
   subjectId: z.string().min(1, "Please select a subject"),
   moduleId: z.string().min(1, "Please select a module"),
-  marksCategoryId: z.string().min(1, "Please select a category"),
+  marksType: z.string().min(1, "Please select a marks type"),
   question: z.string().min(10, "Question must be at least 10 characters"),
   answer: z.string().min(10, "Answer must be at least 10 characters"),
 });
@@ -51,7 +51,7 @@ function AdminPage() {
     defaultValues: {
       subjectId: "",
       moduleId: "",
-      marksCategoryId: "",
+      marksType: "2 Marks",
       question: "",
       answer: "",
     },
@@ -63,17 +63,14 @@ function AdminPage() {
   const { data: modules, isLoading: loadingModules } = useModules(
     selectedSubjectId ? parseInt(selectedSubjectId) : 0
   );
-  
-  const { data: categories, isLoading: loadingCategories } = useMarksCategories(
-    selectedModuleId ? parseInt(selectedModuleId) : 0
-  );
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const subjectName = subjects?.find(s => s.id.toString() === values.subjectId)?.name || "";
     
     try {
       await createQuestion.mutateAsync({
-        marks_category_id: parseInt(values.marksCategoryId),
+        module_id: parseInt(values.moduleId),
+        marks_type: values.marksType,
         subject: subjectName,
         question: values.question,
         answer: values.answer,
@@ -175,29 +172,26 @@ function AdminPage() {
                 />
               </div>
 
-              {/* Category Select */}
+              {/* Marks Type Select */}
               <FormField
                 control={form.control}
-                name="marksCategoryId"
+                name="marksType"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Marks Category</FormLabel>
                     <Select 
                       onValueChange={field.onChange}
-                      disabled={!selectedModuleId || loadingCategories}
+                      defaultValue={field.value}
                       value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="bg-background/50">
-                          <SelectValue placeholder={!selectedModuleId ? "Select module first" : loadingCategories ? "Loading..." : "Select Category"} />
+                          <SelectValue placeholder="Select Marks Type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories?.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
-                            {category.marks_type}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="2 Marks">2 Marks</SelectItem>
+                        <SelectItem value="8 Marks">8 Marks</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

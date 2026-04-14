@@ -140,22 +140,58 @@ export function useCreateQuestion() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (question: { 
-      marks_category_id: number; 
+    mutationFn: async (vars: { 
+      module_id: number; 
+      marks_type: string; 
       subject: string; 
       question: string; 
       answer: string; 
     }) => {
+      // 1. Find or create the marks category
+      let categoryId: number;
+      
+      const { data: category, error: categoryError } = await supabase
+        .from("marks_categories")
+        .select("id")
+        .eq("module_id", vars.module_id)
+        .eq("marks_type", vars.marks_type)
+        .maybeSingle();
+
+      if (categoryError) throw categoryError;
+
+      if (category) {
+        categoryId = category.id;
+      } else {
+        // Create it
+        const { data: newCategory, error: createError } = await supabase
+          .from("marks_categories")
+          .insert([{ module_id: vars.module_id, marks_type: vars.marks_type }])
+          .select()
+          .single();
+        
+        if (createError) throw createError;
+        categoryId = newCategory.id;
+      }
+
+      // 2. Insert the question
       const { data, error } = await supabase
         .from("questions")
-        .insert([question])
+        .insert([{
+          marks_category_id: categoryId,
+          subject: vars.subject,
+          question: vars.question,
+          answer: vars.answer
+        }])
         .select()
         .single();
+        
       if (error) throw error;
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["questions", variables.marks_category_id] });
+      // Invalidate both the categories list for that module and the questions within it
+      queryClient.invalidateQueries({ queryKey: ["marks_categories", variables.module_id] });
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
     },
   });
 }
