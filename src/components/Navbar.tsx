@@ -16,12 +16,6 @@ export function Navbar() {
             <span className="text-xl font-bold text-gradient">ExamAce</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link 
-              to="/admin" 
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Admin
-            </Link>
             <button
               onClick={toggleTheme}
               className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary transition-all duration-300 hover:scale-105"
